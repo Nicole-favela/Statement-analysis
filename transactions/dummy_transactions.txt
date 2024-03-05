@@ -1,0 +1,283 @@
+02/01/2023
+Withdrawal Grocery Store 1234567890 LocationA CardA
+-$20.12
+$2,207.90
+02/05/2023
+Deposit Salary 9876543210 LocationB CardB
++$1500.00
+$3,707.90
+02/07/2023
+Withdrawal Gas Station 2468101234 LocationC CardC
+-$30.00
+$3,677.90
+02/10/2023
+Withdrawal Coffee Shop 1357924680 LocationD CardD
+-$5.50
+$3,672.40
+02/15/2023
+Deposit Freelance Work 5678901234 LocationE CardE
++$800.00
+$4,472.40
+02/18/2023
+Withdrawal Pharmacy 3141592653 LocationF CardF
+-$15.75
+$4,456.65
+02/20/2023
+Withdrawal Restaurant 2718281828 LocationG CardG
+-$45.25
+$4,411.40
+02/25/2023
+Withdrawal Clothing Store 9876543210 LocationH CardH
+-$60.00
+$4,351.40
+02/28/2023
+Withdrawal Bookstore 1234567890 LocationI CardI
+-$25.30
+$4,326.10
+03/03/2023
+Deposit Bonus 9876543210 LocationJ CardJ
++$300.00
+$4,626.10
+03/05/2023
+Withdrawal Electronics Store 1357924680 LocationK CardK
+-$100.50
+$4,525.60
+03/10/2023
+Withdrawal Fast Food 3141592653 LocationL CardL
+-$12.75
+$4,512.85
+03/15/2023
+Deposit Investment Dividend 2718281828 LocationM CardM
++$400.00
+$4,912.85
+03/18/2023
+Withdrawal Hardware Store 9876543210 LocationN CardN
+-$75.20
+$4,837.65
+03/20/2023
+Withdrawal Cinema 1234567890 LocationO CardO
+-$40.00
+$4,797.65
+03/25/2023
+Deposit Rebate 5678901234 LocationP CardP
++$50.00
+$4,847.65
+03/28/2023
+Withdrawal Music Store 9876543210 LocationQ CardQ
+-$55.75
+$4,791.90
+04/01/2023
+Deposit Refund 9876543210 LocationR CardR
++$75.00
+$4,866.90
+04/05/2023
+Withdrawal Home Improvement Store 2468101234 LocationS CardS
+-$90.25
+$4,776.65
+04/10/2023
+Withdrawal Gym Membership 1357924680 LocationT CardT
+-$35.00
+$4,741.65
+04/15/2023
+Deposit Rental Income 5678901234 LocationU CardU
++$600.00
+$5,341.65
+04/18/2023
+Withdrawal Pet Store 3141592653 LocationV CardV
+-$20.50
+$5,321.15
+04/20/2023
+Withdrawal Hair Salon 2718281828 LocationW CardW
+-$65.00
+$5,256.15
+04/25/2023
+Withdrawal Car Wash 9876543210 LocationX CardX
+-$10.00
+$5,246.15
+04/28/2023
+Deposit Gift 1234567890 LocationY CardY
++$25.00
+$5,271.15
+05/01/2023
+Withdrawal ATM 9876543210 LocationZ CardZ
+-$200.00
+$5,071.15
+05/05/2023
+Deposit Investment Dividend 9876543210 LocationAA CardAA
++$400.00
+$5,471.15
+05/10/2023
+Withdrawal Dry Cleaning 1357924680 LocationAB CardAB
+-$18.75
+$5,452.40
+05/15/2023
+Withdrawal Coffee Shop 5678901234 LocationAC CardAC
+-$4.50
+$5,447.90
+05/18/2023
+Deposit Cashback 3141592653 LocationAD CardAD
++$10.00
+$5,457.90
+05/20/2023
+Withdrawal Gas Station 2718281828 LocationAE CardAE
+-$45.00
+$5,412.90
+05/25/2023
+Withdrawal Pharmacy 9876543210 LocationAF CardAF
+-$35.20
+$5,377.70
+05/28/2023
+Deposit Refund 1234567890 LocationAG CardAG
++$50.00
+$5,427.70
+06/01/2023
+Withdrawal Restaurant 9876543210 LocationAH CardAH
+-$75.00
+$5,352.70
+06/05/2023
+Deposit Bonus 2468101234 LocationAI CardAI
++$300.00
+$5,652.70
+06/10/2023
+Withdrawal Electronics Store 1357924680 LocationAJ CardAJ
+-$120.50
+$5,532.20
+06/15/2023
+Withdrawal Movie Theater 5678901234 LocationAK CardAK
+-$20.00
+$5,512.20
+06/18/2023
+Deposit Cash Gift 3141592653 LocationAL CardAL
++$25.00
+$5,537.20
+06/20/2023
+Withdrawal ATM 2718281828 LocationAM CardAM
+-$100.00
+$5,437.20
+06/25/2023
+Withdrawal Grocery Store 9876543210 LocationAN CardAN
+-$60.00
+$5,377.20
+06/28/2023
+Deposit Freelance Work 1234567890 LocationAO CardAO
++$200.00
+$5,577.20
+07/01/2023
+Withdrawal Coffee Shop 9876543210 LocationAP CardAP
+-$5.00
+$5,572.20
+07/05/2023
+Deposit Bonus 1357924680 LocationAQ CardAQ
++$350.00
+$5,922.20
+07/10/2023
+Withdrawal Gas Station 3141592653 LocationAR CardAR
+-$40.00
+$5,882.20
+07/15/2023
+Withdrawal Fast Food 5678901234 LocationAS CardAS
+-$15.00
+$5,867.20
+07/18/2023
+Deposit Cashback 2718281828 LocationAT CardAT
++$20.00
+$5,887.20
+07/20/2023
+Withdrawal ATM 9876543210 LocationAU CardAU
+-$200.00
+$5,687.20
+07/25/2023
+Withdrawal Pharmacy 1234567890 LocationAV CardAV
+-$25.20
+$5,662.00
+07/28/2023
+Deposit Refund 9876543210 LocationAW CardAW
++$30.00
+$5,692.00
+08/01/2023
+Withdrawal Restaurant 1357924680 LocationAX CardAX
+-$80.00
+$5,612.00
+08/05/2023
+Deposit Bonus 3141592653 LocationAY CardAY
++$400.00
+$6,012.00
+08/10/2023
+Withdrawal Electronics Store 5678901234 LocationAZ CardAZ
+-$110.50
+$5,901.50
+08/15/2023
+Withdrawal Movie Theater 2718281828 LocationBA CardBA
+-$18.00
+$5,883.50
+08/18/2023
+Deposit Cash Gift 9876543210 LocationBB CardBB
++$35.00
+$5,918.50
+08/20/2023
+Withdrawal ATM 1234567890 LocationBC CardBC
+-$150.00
+$5,768.50
+08/25/2023
+Withdrawal Grocery Store 9876543210 LocationBD CardBD
+-$80.00
+$5,688.50
+08/28/2023
+Deposit Freelance Work 1357924680 LocationBE CardBE
++$250.00
+$5,938.50
+09/01/2023
+Withdrawal Coffee Shop 9876543210 LocationBF CardBF
+-$10.00
+$5,928.50
+09/05/2023
+Deposit Bonus 3141592653 LocationBG CardBG
++$450.00
+$6,378.50
+09/10/2023
+Withdrawal Gas Station 5678901234 LocationBH CardBH
+-$35.00
+$6,343.50
+09/15/2023
+Withdrawal Fast Food 2718281828 LocationBI CardBI
+-$12.00
+$6,331.50
+09/18/2023
+Deposit Cashback 9876543210 LocationBJ CardBJ
++$15.00
+$6,346.50
+09/20/2023
+Withdrawal ATM 1234567890 LocationBK CardBK
+-$180.00
+$6,166.50
+09/25/2023
+Withdrawal Pharmacy 9876543210 LocationBL CardBL
+-$20.20
+$6,146.30
+09/28/2023
+Deposit Refund 1357924680 LocationBM CardBM
++$25.00
+$6,171.30
+10/01/2023
+Withdrawal Restaurant 9876543210 LocationBN CardBN
+-$90.00
+$6,081.30
+10/05/2023
+Deposit Bonus 3141592653 LocationBO CardBO
++$500.00
+$6,581.30
+10/10/2023
+Withdrawal Electronics Store 5678901234 LocationBP CardBP
+-$80.50
+$6,500.80
+10/15/2023
+Withdrawal Movie Theater 2718281828 LocationBQ CardBQ
+-$22.00
+$6,478.80
+10/18/2023
+Deposit Cash Gift 9876543210 LocationBR CardBR
++$40.00
+$6,518.80
+10/20/2023
+Withdrawal ATM 1234567890 LocationBS CardBS
+-$120.00
