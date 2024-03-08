@@ -70,7 +70,22 @@ def total_spent(df):  # calculates total withdrawls
     return total
 
 
-# TODO: total over date range
+def total_spent_over_date_range(df, start_date, end_date):
+
+    df["Transaction Date"] = pd.to_datetime(
+        df["Transaction Date"], format="%m/%d/%Y"
+    )  # change to datetime obj
+    transaction_range = df[  # use only the rows within the date range
+        (df["Transaction Date"] >= start_date) & (df["Transaction Date"] <= end_date)
+    ]
+    total = (
+        transaction_range[transaction_range["Transaction Type"] == "W"]["Amount"]
+        .apply(
+            lambda x: Decimal(str(x))
+        )  # apply decimal representation to avoid rounding errors
+        .sum()
+    )
+    return total
 
 
 def main():
@@ -91,11 +106,15 @@ def main():
     #     print("Balance:", "{:.2f}".format(balance))
     #     print("------")
     print("*************** dataframe *************** ")
+    df = create_dataframe(dates, locations, trans_types, amounts, balances)
     print(create_dataframe(dates, locations, trans_types, amounts, balances))
     print("*************** total spent *************** ")
     print(
         total_spent(create_dataframe(dates, locations, trans_types, amounts, balances))
     )
+    start_date = "10/15/23"
+    end_date = "11/10/23"
+    print(total_spent_over_date_range(df, start_date=start_date, end_date=end_date))
 
 
 if __name__ == "__main__":
