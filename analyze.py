@@ -88,6 +88,12 @@ def total_spent_over_date_range(df, start_date, end_date):
     return total
 
 
+def get_all_locations(df):
+    unique_locations = df["Location"].unique()  # convert unique locations to np array
+    for i, location in enumerate(unique_locations, start=1):  # shows unique locations
+        print(f"{i}. {location}")
+
+
 def main():
     # Read the transaction.txt - dummy_transactions.txt for testing
     transactions_file = open("transactions/dummy_transactions.txt", "r")
@@ -96,15 +102,7 @@ def main():
     dates, locations, trans_types, amounts, balances = extract_categories(
         transaction_lines
     )
-    # for date, location, trans_type, amount, balance in zip(
-    #     dates, locations, trans_types, amounts, balances
-    # ):
-    #     print("Date:", date)
-    #     print("Location:", location)
-    #     print("Types:", trans_type)
-    #     print("Amount:", amount)
-    #     print("Balance:", "{:.2f}".format(balance))
-    #     print("------")
+
     print("*************** dataframe *************** ")
     df = create_dataframe(dates, locations, trans_types, amounts, balances)
     print(create_dataframe(dates, locations, trans_types, amounts, balances))
@@ -115,6 +113,8 @@ def main():
     start_date = "10/15/23"
     end_date = "11/10/23"
     print(total_spent_over_date_range(df, start_date=start_date, end_date=end_date))
+    print("the unique locations>>>>>")
+    get_all_locations(df)
 
 
 if __name__ == "__main__":
