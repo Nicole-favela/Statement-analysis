@@ -2,6 +2,7 @@ import re
 import pandas as pd
 import os
 from decimal import Decimal
+import matplotlib.pyplot as plt
 
 
 def extract_categories(blocks):  # add each line to category and return lists
@@ -108,6 +109,85 @@ def total_spent_at_location(df, location):  # calculates total at location
     return total
 
 
+# TODO: separate withdrawls from deposits & add hoverable amount labels
+def plot_weekly_spending(df, start_date="02/01/2023", end_date="10/10/2023"):
+    df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
+    df["Net Amount"] = df.apply(  # creates new column for net spending
+        lambda row: -row["Amount"] if row["Transaction Type"] == "W" else row["Amount"],
+        axis=1,
+    )
+    weekly_spending = df.resample("W-MON", on="Transaction Date")["Net Amount"].sum()
+    # convert dates to correct datetime object to limit graph
+    start_date = pd.to_datetime(start_date, format="%m/%d/%Y")
+    end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(weekly_spending.index, weekly_spending.values, marker="o", linestyle="-")
+    plt.title("Weekly Spending")
+    plt.xlabel("Ending Date")
+    plt.ylabel("Net Change in Balance ($)")
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.xlim(start_date, end_date)
+    plt.show()
+
+
+def plot_daily_spending(df, start_date="02/01/2023", end_date="09/01/2023"):
+    df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
+    df["Net Amount"] = (
+        df.apply(  # add extra col for net amount to filter withdrawals from deposits
+            lambda row: (
+                -row["Amount"] if row["Transaction Type"] == "W" else row["Amount"]
+            ),
+            axis=1,
+        )
+    )
+    print(df.head())
+    daily_spending = df.resample("D", on="Transaction Date")["Net Amount"].sum()
+
+    withdrawals = df[df["Net Amount"] < 0]
+    deposits = df[df["Net Amount"] > 0]
+
+    # convert dates to correct datetime object to limit graph
+    start_date = pd.to_datetime(start_date, format="%m/%d/%Y")
+    end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
+
+    plt.figure(figsize=(10, 6))
+
+    # plt.plot(daily_spending.index, daily_spending.values, marker="o", linestyle="-")
+    plt.plot(  # plot withdrawlls in red separately
+        withdrawals["Transaction Date"],
+        withdrawals["Net Amount"],
+        marker="o",
+        color="red",
+        linestyle="-",
+    )
+    plt.plot(
+        deposits["Transaction Date"],
+        deposits["Net Amount"],
+        marker="o",
+        color="black",
+        linestyle="-",
+    )
+    for _, row in df.iterrows():  # adds labels to points with amounts
+        plt.text(
+            row["Transaction Date"],
+            row["Net Amount"],
+            f"${abs(row['Net Amount']):,.2f}",
+            ha="right",
+            va="bottom",
+        )
+    plt.title("Daily Spending")
+    plt.xlabel("Ending Date")
+    plt.ylabel("Net Change in Balance ($)")
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.xlim(start_date, end_date)
+    plt.show()
+
+
 def main():
     # Read the transaction.txt - dummy_transactions.txt for testing
     transactions_file = open("transactions/dummy_transactions.txt", "r")
@@ -131,6 +211,8 @@ def main():
     get_all_locations(df)
     print("*************total spent at location*******************")
     print(total_spent_at_location(df, "Coffee Shop"))
+    plot_weekly_spending(df)
+    # plot_daily_spending(df)
 
 
 if __name__ == "__main__":
