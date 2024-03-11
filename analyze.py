@@ -94,6 +94,20 @@ def get_all_locations(df):
         print(f"{i}. {location}")
 
 
+def total_spent_at_location(df, location):  # calculates total at location
+    filtered_locations = df[  # use only the rows corresponding to the location given
+        (df["Location"] == location)
+    ]
+    total = (
+        filtered_locations[filtered_locations["Transaction Type"] == "W"]["Amount"]
+        .apply(
+            lambda x: Decimal(str(x))
+        )  # apply decimal representation to avoid rounding errors
+        .sum()
+    )
+    return total
+
+
 def main():
     # Read the transaction.txt - dummy_transactions.txt for testing
     transactions_file = open("transactions/dummy_transactions.txt", "r")
@@ -115,6 +129,8 @@ def main():
     print(total_spent_over_date_range(df, start_date=start_date, end_date=end_date))
     print("the unique locations>>>>>")
     get_all_locations(df)
+    print("*************total spent at location*******************")
+    print(total_spent_at_location(df, "Coffee Shop"))
 
 
 if __name__ == "__main__":
