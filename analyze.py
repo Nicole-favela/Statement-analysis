@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from decimal import Decimal
 import matplotlib.pyplot as plt
+import argparse
 
 
 def extract_categories(blocks):  # add each line to category and return lists
@@ -91,8 +92,11 @@ def total_spent_over_date_range(df, start_date, end_date):
 
 def get_all_locations(df):
     unique_locations = df["Location"].unique()  # convert unique locations to np array
+    locations_list = []  # list of locations
     for i, location in enumerate(unique_locations, start=1):  # shows unique locations
         print(f"{i}. {location}")
+        locations_list.append(location)
+    return locations_list
 
 
 def total_spent_at_location(df, location):  # calculates total at location
@@ -188,11 +192,32 @@ def plot_daily_spending(df, start_date="02/01/2023", end_date="09/01/2023"):
     plt.show()
 
 
+def plot_bar_chart_of_withdrawals(locations, totals):
+    # remove locations where transaction was deposit
+    filtered_locations = [
+        location for location, total in zip(locations, totals) if total != 0.0
+    ]
+    filtered_totals = [total for total in totals if total != 0.0]
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(filtered_locations, filtered_totals, color="red")
+
+    # Add labels and title
+    plt.xlabel("Locations")
+    plt.ylabel("Totals ($)")
+    plt.title("Money Spent at All Locations")
+
+    # Show plot
+    plt.xticks(rotation=45)
+    plt.tight_layout()  # Adjust layout
+    plt.show()
+
+
 def main():
     # Read the transaction.txt - dummy_transactions.txt for testing
     transactions_file = open("transactions/dummy_transactions.txt", "r")
     transaction_lines = transactions_file.readlines()
-
+    parser = argparse.ArgumentParser(description="Bank statement Analysis")
     dates, locations, trans_types, amounts, balances = extract_categories(
         transaction_lines
     )
@@ -208,10 +233,24 @@ def main():
     end_date = "11/10/23"
     print(total_spent_over_date_range(df, start_date=start_date, end_date=end_date))
     print("the unique locations>>>>>")
-    get_all_locations(df)
+    all_locations = get_all_locations(df)
     print("*************total spent at location*******************")
+
+    # parser.add_argument(
+    #     "Enter the number of the location", type=int, help="an integer number"
+    # )
+    # args = parser.parse_args()
     print(total_spent_at_location(df, "Coffee Shop"))
-    plot_weekly_spending(df)
+    print("************* Plots and graphs of spending *******************")
+    # plot_weekly_spending(df)
+    # for bar chart
+    location_totals = []
+    for location in all_locations:
+        total = total_spent_at_location(df, location)
+        location_totals.append(total)  # total for each location
+
+    plot_bar_chart_of_withdrawals(all_locations, location_totals)
+
     # plot_daily_spending(df)
 
 
