@@ -215,9 +215,17 @@ def plot_bar_chart_of_withdrawals(locations, totals):
 
 def main():
     # Read the transaction.txt - dummy_transactions.txt for testing
-    transactions_file = open("transactions/dummy_transactions.txt", "r")
-    transaction_lines = transactions_file.readlines()
+
     parser = argparse.ArgumentParser(description="Bank statement Analysis")
+    parser.add_argument(
+        "statement_path",
+        help="Full path to the folder that contains your statement file as a .txt.",
+    )
+    # testing file path: "transactions/dummy_transactions.txt"
+    args = parser.parse_args()
+    transactions_file = open(args.statement_path, "r")
+    transaction_lines = transactions_file.readlines()
+
     dates, locations, trans_types, amounts, balances = extract_categories(
         transaction_lines
     )
