@@ -237,19 +237,20 @@ def main():
         transaction_lines
     )
 
-    print("*************** Statement *************** ")
+    print("-------------------------------------------------------------------------")
     df = create_dataframe(dates, locations, trans_types, amounts, balances)
     print(df.head(10))
-    print("*************** total spent *************** ")
-    print(
-        total_spent(create_dataframe(dates, locations, trans_types, amounts, balances))
-    )
-    print("******************************************* ")
+    print("-------------------------------------------------------------------------")
+    grandTotal = total_spent(df)
+    print(f"Total spent over entire statement period: ${grandTotal}")
+    
+    print("-------------------------------------------------------------------------")
     
    
     main_actions = ["View Graphs", "View totals Over Date Range or Location", "Category 3"]
     selected_action = choose_option(main_actions)
     print(f"You selected: {selected_action}")
+    print("-------------------------------------------------------------------------")
     printFlag=False
     all_locations = get_all_locations(df,printFlag)
     if selected_action == "View Graphs":
@@ -270,11 +271,12 @@ def main():
         printFlag = True
         all_locations= get_all_locations(df, printFlag)
         location_num = int(input("Choose an option from the locations: "))
-        print("******************************************* ")
+        print("-------------------------------------------------------------------------")
         location_selected = all_locations[location_num - 1]
         print(
-            f"Total at {location_selected}: {"{:.2f}".format(total_spent_at_location(df, location_selected))}"
+            f"Total at {location_selected}: ${"{:.2f}".format(total_spent_at_location(df, location_selected))}"
         )
+        print("-------------------------------------------------------------------------")
     elif selected_suboptions == 'Total spent from specified start and end date':
         start_date = str(input("Enter a start date in the format MM/DD/YY: "))
         end_date = str(input("Enter an end date in the format MM/DD/YY: "))
