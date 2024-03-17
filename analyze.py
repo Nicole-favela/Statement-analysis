@@ -90,14 +90,21 @@ def total_spent_over_date_range(df, start_date, end_date):
     return total
 
 
-def get_all_locations(df):
+def choose_option(options):
+    for i, option in enumerate(options, start=1):
+        print(f"{i}. {option}")
+    choice = int(input("Choose an option: "))
+    return options[choice - 1]
+
+
+def get_all_locations(df, flag):
     unique_locations = df["Location"].unique()  # convert unique locations to np array
     locations_list = []  # list of locations
     for i, location in enumerate(unique_locations, start=1):  # shows unique locations
-        print(f"{i}. {location}")
+        if flag:
+            print(f"{i}. {location}")
         locations_list.append(location)
     return locations_list
-
 
 def total_spent_at_location(df, location):  # calculates total at location
     filtered_locations = df[  # use only the rows corresponding to the location given
@@ -230,36 +237,60 @@ def main():
         transaction_lines
     )
 
-    print("*************** dataframe *************** ")
+    print("*************** Statement *************** ")
     df = create_dataframe(dates, locations, trans_types, amounts, balances)
-    print(create_dataframe(dates, locations, trans_types, amounts, balances))
+    print(df.head(10))
     print("*************** total spent *************** ")
     print(
         total_spent(create_dataframe(dates, locations, trans_types, amounts, balances))
     )
-    start_date = "10/15/23"
-    end_date = "11/10/23"
-    print(total_spent_over_date_range(df, start_date=start_date, end_date=end_date))
-    print("the unique locations>>>>>")
-    all_locations = get_all_locations(df)
-    print("*************total spent at location*******************")
+    print("******************************************* ")
+    
+   
+    main_actions = ["View Graphs", "View totals Over Date Range or Location", "Category 3"]
+    selected_action = choose_option(main_actions)
+    print(f"You selected: {selected_action}")
+    printFlag=False
+    all_locations = get_all_locations(df,printFlag)
+    if selected_action == "View Graphs":
+        sub_options = [
+            "View Weekly Spending Graph",
+            "View Daily Spending Graph",
+            "View Total Spent By Location Graph",
+        ]
+  
+    elif selected_action == "View totals Over Date Range or Location":
+        sub_options = ['Total spent from specified start and end date', 'Total spent at given location']
+       
+    selected_suboptions = choose_option(sub_options)
+   
+    print(f"You selected: {selected_action}")
+    if selected_suboptions == 'Total spent at given location':
+        print("the unique locations>>>>>")
+        printFlag = True
+        all_locations= get_all_locations(df, printFlag)
+        location_num = int(input("Choose an option from the locations: "))
+        print("******************************************* ")
+        location_selected = all_locations[location_num - 1]
+        print(
+            f"Total at {location_selected}: {"{:.2f}".format(total_spent_at_location(df, location_selected))}"
+        )
+    elif selected_suboptions == 'Total spent from specified start and end date':
+        start_date = str(input("Enter a start date in the format MM/DD/YY: "))
+        end_date = str(input("Enter an end date in the format MM/DD/YY: "))
+        print(total_spent_over_date_range(df, start_date=start_date, end_date=end_date))
+    
+    elif selected_suboptions == 'View Weekly Spending Graph':
+        plot_weekly_spending(df)
+    elif selected_suboptions== 'View Daily Spending Graph':
+        plot_daily_spending(df)
+    else: #bar graph by locatioon 
+        location_totals = []
+        for location in all_locations:
+            total = total_spent_at_location(df, location)
+            location_totals.append(total)  # total for each location
 
-    # parser.add_argument(
-    #     "Enter the number of the location", type=int, help="an integer number"
-    # )
-    # args = parser.parse_args()
-    print(total_spent_at_location(df, "Coffee Shop"))
-    print("************* Plots and graphs of spending *******************")
-    # plot_weekly_spending(df)
-    # for bar chart
-    location_totals = []
-    for location in all_locations:
-        total = total_spent_at_location(df, location)
-        location_totals.append(total)  # total for each location
-
-    plot_bar_chart_of_withdrawals(all_locations, location_totals)
-
-    # plot_daily_spending(df)
+        plot_bar_chart_of_withdrawals(all_locations, location_totals)
 
 
 if __name__ == "__main__":
