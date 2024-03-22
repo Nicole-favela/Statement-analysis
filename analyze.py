@@ -5,6 +5,8 @@ from decimal import Decimal
 import matplotlib.pyplot as plt
 import argparse
 
+from transaction_report import create_analytics_report
+
 
 def extract_categories(blocks):  # add each line to category and return lists
     # categories
@@ -247,7 +249,7 @@ def main():
     print("-------------------------------------------------------------------------")
     
    
-    main_actions = ["View Graphs", "View totals Over Date Range or Location", "Category 3"]
+    main_actions = ["View Graphs", "View totals Over Date Range or Location", "Generate Report As PDF"]
     selected_action = choose_option(main_actions)
     print(f"You selected: {selected_action}")
     print("-------------------------------------------------------------------------")
@@ -262,6 +264,10 @@ def main():
   
     elif selected_action == "View totals Over Date Range or Location":
         sub_options = ['Total spent from specified start and end date', 'Total spent at given location']
+    else: #generate report option
+        sub_options = ['Create Report']
+
+
        
     selected_suboptions = choose_option(sub_options)
    
@@ -286,6 +292,11 @@ def main():
         plot_weekly_spending(df)
     elif selected_suboptions== 'View Daily Spending Graph':
         plot_daily_spending(df)
+    #TODO: add last balance entry in df
+    elif selected_suboptions == 'Create Report':
+        balance_end_date = df["Transaction Date"].iloc[-1]
+        current_balance = df["Balance"].iloc[-1]
+        create_analytics_report(grandTotal,current_balance, balance_end_date)
     else: #bar graph by locatioon 
         location_totals = []
         for location in all_locations:
