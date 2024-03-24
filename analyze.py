@@ -125,29 +125,41 @@ def total_spent_at_location(df, location):  # calculates total at location
 
 # TODO: add hoverable amount labels
 def plot_weekly_spending(df, start_date="08/15/2023", end_date="10/10/2023"):
-    df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
-    df["Net Amount"] = df.apply(  # creates new column for net spending
-        lambda row: -row["Amount"] if row["Transaction Type"] == "W" else row["Amount"],
-        axis=1,
-    )
-    weekly_spending = df.resample("W-MON", on="Transaction Date")["Net Amount"].sum()
-    # convert dates to correct datetime object to limit graph
     start_date = pd.to_datetime(start_date, format="%m/%d/%Y")
     end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
+    df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
+    date_filtered_df = df[(df["Transaction Date"] >= start_date) & (df["Transaction Date"] <= end_date+ pd.DateOffset(weeks=1))]
+    date_filtered_df["Net Amount"] = date_filtered_df.apply(  # creates new column for net spending
+        lambda row: -row["Amount"] if row["Transaction Type"] == "W" else 0, #only considers withdrawal amounts
+        axis=1,
+    )
+    weekly_spending = date_filtered_df.resample("W-MON", on="Transaction Date")["Net Amount"].sum()
+    
     plt.figure(figsize=(10, 6))
+    x= weekly_spending.index
+    y=abs(weekly_spending.values)
 
-    plt.plot(weekly_spending.index, abs(weekly_spending.values), marker="o", linestyle="-")
+    plt.plot(x, y, marker="o", linestyle="-")
+    for date, amount in zip(weekly_spending.index, weekly_spending.values):
+        plt.text(
+            date,
+            abs(amount),
+            f"${abs(amount):,.2f}",
+            ha="right",
+            va="bottom",
+            fontsize=8
+        )
     plt.title("Weekly Spending")
     plt.xlabel("Weeks")
-    plt.ylabel("Net Change in Balance ($)")
+    plt.ylabel("Amount Spent ($)")
     plt.grid(True)
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=45,fontsize=6)
     plt.tight_layout()
     plt.xlim(start_date, end_date)
     plt.show()
 
-#TODO: fix $ labels - sometimes too far from data
-def plot_daily_spending(df, start_date="08/15/2023", end_date="09/15/2023"):
+#TODO: add legend for colors
+def plot_daily_transactions_by_type(df, start_date="08/15/2023", end_date="09/15/2023"):
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
     df["Net Amount"] = (
         df.apply(  # add extra col for net amount to filter withdrawals from deposits
@@ -173,7 +185,7 @@ def plot_daily_spending(df, start_date="08/15/2023", end_date="09/15/2023"):
     plt.figure(figsize=(10, 6))
 
     
-    plt.plot(  # plot withdrawlls in red separately
+    plt.plot(  # plot withdrawals in red separately
         withdrawals["Transaction Date"],
         abs(withdrawals["Net Amount"]),
         marker="o",
@@ -187,19 +199,29 @@ def plot_daily_spending(df, start_date="08/15/2023", end_date="09/15/2023"):
         color="black",
         linestyle="-",
     )
-    for _, row in df.iterrows():  # adds labels to points with amounts
+    for _, row in withdrawals.iterrows():  # adds labels to points with amounts
         plt.text(
             row["Transaction Date"],
-            row["Net Amount"],
+            abs(row["Net Amount"]),
             f"${abs(row['Net Amount']):,.2f}",
             ha="right",
             va="bottom",
             fontsize=8,
             bbox=dict(facecolor='white', alpha=0.5, pad=3) 
         )
+    for _, row in deposits.iterrows():
+        plt.text(
+            row["Transaction Date"],
+            abs(row["Net Amount"]),
+            f"${abs(row['Net Amount']):,.2f}",
+            ha="right",
+            va="bottom",
+            fontsize=8,
+            bbox=dict(facecolor='white', alpha=0.5, pad=3)
+        )
     plt.title(f"Daily Spending Starting {start_month_name} of {start_year}")
     plt.xlabel("Dates")
-    plt.ylabel("Net Change in Balance ($)")
+    plt.ylabel("Money Spent or Deposited($)")
     plt.grid(True)
     plt.xticks(unique_dates ,rotation=90, fontsize=6)
     plt.tight_layout()
@@ -295,7 +317,7 @@ def main():
     elif selected_suboptions == 'View Weekly Spending Graph':
         plot_weekly_spending(df)
     elif selected_suboptions== 'View Daily Spending Graph':
-        plot_daily_spending(df)
+        plot_daily_transactions_by_type(df)
    
     elif selected_suboptions == 'Create Report':
         balance_end_date = df["Transaction Date"].iloc[-1]
