@@ -4,6 +4,7 @@ import os
 from decimal import Decimal
 import matplotlib.pyplot as plt
 import argparse
+import calendar
 
 from transaction_report import create_analytics_report
 
@@ -122,8 +123,8 @@ def total_spent_at_location(df, location):  # calculates total at location
     return total
 
 
-# TODO: separate withdrawls from deposits & add hoverable amount labels
-def plot_weekly_spending(df, start_date="02/01/2023", end_date="10/10/2023"):
+# TODO: add hoverable amount labels
+def plot_weekly_spending(df, start_date="08/15/2023", end_date="10/10/2023"):
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
     df["Net Amount"] = df.apply(  # creates new column for net spending
         lambda row: -row["Amount"] if row["Transaction Type"] == "W" else row["Amount"],
@@ -135,9 +136,9 @@ def plot_weekly_spending(df, start_date="02/01/2023", end_date="10/10/2023"):
     end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
     plt.figure(figsize=(10, 6))
 
-    plt.plot(weekly_spending.index, weekly_spending.values, marker="o", linestyle="-")
+    plt.plot(weekly_spending.index, abs(weekly_spending.values), marker="o", linestyle="-")
     plt.title("Weekly Spending")
-    plt.xlabel("Ending Date")
+    plt.xlabel("Weeks")
     plt.ylabel("Net Change in Balance ($)")
     plt.grid(True)
     plt.xticks(rotation=45)
@@ -145,8 +146,8 @@ def plot_weekly_spending(df, start_date="02/01/2023", end_date="10/10/2023"):
     plt.xlim(start_date, end_date)
     plt.show()
 
-
-def plot_daily_spending(df, start_date="02/01/2023", end_date="09/01/2023"):
+#TODO: fix $ labels - sometimes too far from data
+def plot_daily_spending(df, start_date="08/15/2023", end_date="09/15/2023"):
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
     df["Net Amount"] = (
         df.apply(  # add extra col for net amount to filter withdrawals from deposits
@@ -165,20 +166,23 @@ def plot_daily_spending(df, start_date="02/01/2023", end_date="09/01/2023"):
     # convert dates to correct datetime object to limit graph
     start_date = pd.to_datetime(start_date, format="%m/%d/%Y")
     end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
-
+    start_year = start_date.strftime('%Y')
+    start_month_name =calendar.month_name[start_date.month]
+    unique_dates = pd.date_range(start=start_date, end=end_date)
+    
     plt.figure(figsize=(10, 6))
 
-    # plt.plot(daily_spending.index, daily_spending.values, marker="o", linestyle="-")
+    
     plt.plot(  # plot withdrawlls in red separately
         withdrawals["Transaction Date"],
-        withdrawals["Net Amount"],
+        abs(withdrawals["Net Amount"]),
         marker="o",
         color="red",
         linestyle="-",
     )
     plt.plot(
         deposits["Transaction Date"],
-        deposits["Net Amount"],
+        abs(deposits["Net Amount"]),
         marker="o",
         color="black",
         linestyle="-",
@@ -190,12 +194,14 @@ def plot_daily_spending(df, start_date="02/01/2023", end_date="09/01/2023"):
             f"${abs(row['Net Amount']):,.2f}",
             ha="right",
             va="bottom",
+            fontsize=8,
+            bbox=dict(facecolor='white', alpha=0.5, pad=3) 
         )
-    plt.title("Daily Spending")
-    plt.xlabel("Ending Date")
+    plt.title(f"Daily Spending Starting {start_month_name} of {start_year}")
+    plt.xlabel("Dates")
     plt.ylabel("Net Change in Balance ($)")
     plt.grid(True)
-    plt.xticks(rotation=45)
+    plt.xticks(unique_dates ,rotation=90, fontsize=6)
     plt.tight_layout()
     plt.xlim(start_date, end_date)
     plt.show()
@@ -247,8 +253,6 @@ def main():
     print(f"Total spent over entire statement period: ${grandTotal}")
     
     print("-------------------------------------------------------------------------")
-    
-   
     main_actions = ["View Graphs", "View totals Over Date Range or Location", "Generate Report As PDF"]
     selected_action = choose_option(main_actions)
     print(f"You selected: {selected_action}")
@@ -271,7 +275,7 @@ def main():
        
     selected_suboptions = choose_option(sub_options)
    
-    print(f"You selected: {selected_action}")
+    print(f"You selected: {selected_suboptions}")
     if selected_suboptions == 'Total spent at given location':
         print("the unique locations>>>>>")
         printFlag = True
@@ -292,7 +296,7 @@ def main():
         plot_weekly_spending(df)
     elif selected_suboptions== 'View Daily Spending Graph':
         plot_daily_spending(df)
-    #TODO: add last balance entry in df
+   
     elif selected_suboptions == 'Create Report':
         balance_end_date = df["Transaction Date"].iloc[-1]
         current_balance = df["Balance"].iloc[-1]
