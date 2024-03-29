@@ -61,6 +61,16 @@ def create_dataframe(dates, locations, types, amounts, balances):
         ],
     )
     return df
+def save_figure(type, filename=None):
+    folder_path = 'graphs'
+
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    filename =  filename if filename else f'{type}.png'
+    full_path = os.path.join(folder_path, filename)
+    plt.savefig(full_path)
+    plt.close()
+	
 
 
 def total_spent(df):  # calculates total withdrawls
@@ -124,11 +134,11 @@ def total_spent_at_location(df, location):  # calculates total at location
 
 
 # TODO: add hoverable amount labels
-def plot_weekly_spending(df, start_date="08/15/2023", end_date="10/10/2023"):
+def plot_weekly_spending(df, start_date="08/15/2023", end_date="10/10/2023",show=True):
     start_date = pd.to_datetime(start_date, format="%m/%d/%Y")
     end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
-    date_filtered_df = df[(df["Transaction Date"] >= start_date) & (df["Transaction Date"] <= end_date+ pd.DateOffset(weeks=1))]
+    date_filtered_df = df[(df["Transaction Date"] >= start_date) & (df["Transaction Date"] <= end_date+ pd.DateOffset(weeks=1))].copy()
     date_filtered_df["Net Amount"] = date_filtered_df.apply(  # creates new column for net spending
         lambda row: -row["Amount"] if row["Transaction Type"] == "W" else 0, #only considers withdrawal amounts
         axis=1,
@@ -149,17 +159,22 @@ def plot_weekly_spending(df, start_date="08/15/2023", end_date="10/10/2023"):
             va="bottom",
             fontsize=8
         )
-    plt.title("Weekly Spending")
+    start_date_str = start_date.date().strftime("%Y-%m-%d")
+    plt.title(f"Weekly Spending Starting {start_date_str} ")
     plt.xlabel("Weeks")
     plt.ylabel("Amount Spent ($)")
     plt.grid(True)
     plt.xticks(rotation=45,fontsize=6)
     plt.tight_layout()
     plt.xlim(start_date, end_date)
-    plt.show()
+    if show:
+        plt.show()
+    else:
+        save_figure('time series', 'Weekly_spending_plot')
+
 
 #TODO: add legend for colors
-def plot_daily_transactions_by_type(df, start_date="08/15/2023", end_date="09/15/2023"):
+def plot_daily_transactions_by_type(df, start_date="08/15/2023", end_date="09/15/2023",show=True):
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
     df["Net Amount"] = (
         df.apply(  # add extra col for net amount to filter withdrawals from deposits
@@ -226,10 +241,15 @@ def plot_daily_transactions_by_type(df, start_date="08/15/2023", end_date="09/15
     plt.xticks(unique_dates ,rotation=90, fontsize=6)
     plt.tight_layout()
     plt.xlim(start_date, end_date)
-    plt.show()
+    if show:
+        plt.show()
+    else:
+        save_figure('time series', 'Daily_spending_by_type_plot')
 
 
-def plot_bar_chart_of_withdrawals(locations, totals):
+
+
+def plot_bar_chart_of_withdrawals(locations, totals, show =True):
     # remove locations where transaction was deposit
     filtered_locations = [
         location for location, total in zip(locations, totals) if total != 0.0
@@ -247,7 +267,11 @@ def plot_bar_chart_of_withdrawals(locations, totals):
     # Show plot
     plt.xticks(rotation=45)
     plt.tight_layout()  # Adjust layout
-    plt.show()
+    if show:
+        plt.show()
+    else:
+        save_figure('bar chart', 'Spending_by_location_bar')
+
 
 
 def main():
@@ -298,6 +322,11 @@ def main():
     selected_suboptions = choose_option(sub_options)
    
     print(f"You selected: {selected_suboptions}")
+    #calculate location totals:
+    location_totals = []
+    for location in all_locations:
+        total = total_spent_at_location(df, location)
+        location_totals.append(total)  # total for each location
     if selected_suboptions == 'Total spent at given location':
         print("the unique locations>>>>>")
         printFlag = True
@@ -322,12 +351,14 @@ def main():
     elif selected_suboptions == 'Create Report':
         balance_end_date = df["Transaction Date"].iloc[-1]
         current_balance = df["Balance"].iloc[-1]
+        
+        plot_weekly_spending(df,show = False)
+        plot_daily_transactions_by_type(df, show=False)
+        plot_bar_chart_of_withdrawals(all_locations, location_totals, show=False)
+
         create_analytics_report(grandTotal,current_balance, balance_end_date)
     else: #bar graph by locatioon 
-        location_totals = []
-        for location in all_locations:
-            total = total_spent_at_location(df, location)
-            location_totals.append(total)  # total for each location
+       
 
         plot_bar_chart_of_withdrawals(all_locations, location_totals)
 
