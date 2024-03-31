@@ -134,11 +134,14 @@ def total_spent_at_location(df, location):  # calculates total at location
 
 
 # TODO: add hoverable amount labels
-def plot_weekly_spending(df, start_date="08/15/2023", end_date="10/10/2023",show=True):
+def plot_weekly_spending(df, start_date="06/15/2023", end_date="10/10/2023",show=True):
     start_date = pd.to_datetime(start_date, format="%m/%d/%Y")
-    end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
+    #end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
+    tmp_end_date = start_date + pd.DateOffset(months=3) #3 months after start
+    max_date_in_data = pd.to_datetime(df["Transaction Date"].iloc[-1])
+    actual_end_date = min(tmp_end_date, max_date_in_data)
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
-    date_filtered_df = df[(df["Transaction Date"] >= start_date) & (df["Transaction Date"] <= end_date+ pd.DateOffset(weeks=1))].copy()
+    date_filtered_df = df[(df["Transaction Date"] >= start_date) & (df["Transaction Date"] <= actual_end_date + pd.DateOffset(weeks=1))].copy()
     date_filtered_df["Net Amount"] = date_filtered_df.apply(  # creates new column for net spending
         lambda row: -row["Amount"] if row["Transaction Type"] == "W" else 0, #only considers withdrawal amounts
         axis=1,
@@ -166,15 +169,15 @@ def plot_weekly_spending(df, start_date="08/15/2023", end_date="10/10/2023",show
     plt.grid(True)
     plt.xticks(rotation=45,fontsize=6)
     plt.tight_layout()
-    plt.xlim(start_date, end_date)
+    plt.xlim(start_date, actual_end_date )
     if show:
         plt.show()
     else:
         save_figure('time series', 'Weekly_spending_plot')
 
 
-#TODO: add legend for colors
-def plot_daily_transactions_by_type(df, start_date="08/15/2023", end_date="09/15/2023",show=True):
+#TODO: add legend for colors 
+def plot_daily_transactions_by_type(df, start_date=None, show=True):
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
     df["Net Amount"] = (
         df.apply(  # add extra col for net amount to filter withdrawals from deposits
@@ -184,18 +187,26 @@ def plot_daily_transactions_by_type(df, start_date="08/15/2023", end_date="09/15
             axis=1,
         )
     )
-    print(df.head())
+   
     daily_spending = df.resample("D", on="Transaction Date")["Net Amount"].sum()
 
     withdrawals = df[df["Net Amount"] < 0]
     deposits = df[df["Net Amount"] > 0]
-
-    # convert dates to correct datetime object to limit graph
-    start_date = pd.to_datetime(start_date, format="%m/%d/%Y")
-    end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
+  
+    if start_date is None: #if it is null, the default is the beginning of statement
+        start_date = df['Transaction Date'].iloc[0]
+      
+    else:
+        start_date = pd.to_datetime(start_date, format="%m/%d/%y")
+        print('start date is: ', start_date, ' of type: ', type(start_date))
+   
     start_year = start_date.strftime('%Y')
     start_month_name =calendar.month_name[start_date.month]
-    unique_dates = pd.date_range(start=start_date, end=end_date)
+    #30 day max (1 month) range from start:
+    tmp_end_date = start_date + pd.DateOffset(months=1) 
+    max_date_in_data = pd.to_datetime(df["Transaction Date"].iloc[-1])
+    actual_end_date = min(tmp_end_date, max_date_in_data)
+    unique_dates = pd.date_range(start=start_date, end=actual_end_date )
     
     plt.figure(figsize=(10, 6))
 
@@ -240,7 +251,7 @@ def plot_daily_transactions_by_type(df, start_date="08/15/2023", end_date="09/15
     plt.grid(True)
     plt.xticks(unique_dates ,rotation=90, fontsize=6)
     plt.tight_layout()
-    plt.xlim(start_date, end_date)
+    plt.xlim(start_date, actual_end_date )
     if show:
         plt.show()
     else:
@@ -341,7 +352,8 @@ def main():
     elif selected_suboptions == 'Total spent from specified start and end date':
         start_date = str(input("Enter a start date in the format MM/DD/YY: "))
         end_date = str(input("Enter an end date in the format MM/DD/YY: "))
-        print(total_spent_over_date_range(df, start_date=start_date, end_date=end_date))
+        total_in_range = total_spent_over_date_range(df, start_date=start_date, end_date=end_date)
+        print( f"Total in that range: ${"{:.2f}".format(total_in_range)}")
     
     elif selected_suboptions == 'View Weekly Spending Graph':
         plot_weekly_spending(df)
@@ -350,13 +362,15 @@ def main():
    
     elif selected_suboptions == 'Create Report':
         balance_end_date = df["Transaction Date"].iloc[-1]
+        balance_start_date = df["Transaction Date"].iloc[0]
         current_balance = df["Balance"].iloc[-1]
-        
+         #TODO: allow user to input start dates
+        #start_date = "07/20/23"
         plot_weekly_spending(df,show = False)
         plot_daily_transactions_by_type(df, show=False)
         plot_bar_chart_of_withdrawals(all_locations, location_totals, show=False)
-
-        create_analytics_report(grandTotal,current_balance, balance_end_date)
+       
+        create_analytics_report(grandTotal,current_balance,balance_start_date, balance_end_date)
     else: #bar graph by locatioon 
        
 
