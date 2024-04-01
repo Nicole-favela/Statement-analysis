@@ -134,12 +134,19 @@ def total_spent_at_location(df, location):  # calculates total at location
 
 
 # TODO: add hoverable amount labels
-def plot_weekly_spending(df, start_date="06/15/2023", end_date="10/10/2023",show=True):
-    start_date = pd.to_datetime(start_date, format="%m/%d/%Y")
-    #end_date = pd.to_datetime(end_date, format="%m/%d/%Y")
-    tmp_end_date = start_date + pd.DateOffset(months=3) #3 months after start
+def plot_weekly_spending(df, start_date=None,show=True):
+    if start_date is None: #if it is null, the default is the beginning of statement
+        start_date = pd.to_datetime(df['Transaction Date'].iloc[0])
+      
+    else:
+        start_date = pd.to_datetime(start_date, format="%m/%d/%y")
+        print('start date is: ', start_date, ' of type: ', type(start_date))
+   
+    print('type of start datte: ', type(start_date))
+    tmp_end_date = start_date + pd.DateOffset(months=2) #2 months after start
     max_date_in_data = pd.to_datetime(df["Transaction Date"].iloc[-1])
     actual_end_date = min(tmp_end_date, max_date_in_data)
+   
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
     date_filtered_df = df[(df["Transaction Date"] >= start_date) & (df["Transaction Date"] <= actual_end_date + pd.DateOffset(weeks=1))].copy()
     date_filtered_df["Net Amount"] = date_filtered_df.apply(  # creates new column for net spending
@@ -147,6 +154,7 @@ def plot_weekly_spending(df, start_date="06/15/2023", end_date="10/10/2023",show
         axis=1,
     )
     weekly_spending = date_filtered_df.resample("W-MON", on="Transaction Date")["Net Amount"].sum()
+    
     
     plt.figure(figsize=(10, 6))
     x= weekly_spending.index
@@ -365,7 +373,7 @@ def main():
         balance_start_date = df["Transaction Date"].iloc[0]
         current_balance = df["Balance"].iloc[-1]
          #TODO: allow user to input start dates
-        #start_date = "07/20/23"
+        #start_date = "09/20/23"
         plot_weekly_spending(df,show = False)
         plot_daily_transactions_by_type(df, show=False)
         plot_bar_chart_of_withdrawals(all_locations, location_totals, show=False)
