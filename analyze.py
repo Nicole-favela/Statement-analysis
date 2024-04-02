@@ -104,6 +104,7 @@ def total_spent_over_date_range(df, start_date, end_date):
 
 
 def choose_option(options):
+ 
     for i, option in enumerate(options, start=1):
         print(f"{i}. {option}")
     choice = int(input("Choose an option: "))
@@ -265,23 +266,31 @@ def plot_daily_transactions_by_type(df, start_date=None, show=True):
     else:
         save_figure('time series', 'Daily_spending_by_type_plot')
 
+def plot_bar_chart_of_withdrawals(df, start_date=None,show =True):
+    if start_date is None: #if it is null, the default is the beginning of statement
+        start_date = pd.to_datetime(df['Transaction Date'].iloc[0])
+      
+    else:
+        start_date = pd.to_datetime(start_date, format="%m/%d/%y")
 
-
-
-def plot_bar_chart_of_withdrawals(locations, totals, show =True):
-    # remove locations where transaction was deposit
-    filtered_locations = [
-        location for location, total in zip(locations, totals) if total != 0.0
-    ]
-    filtered_totals = [total for total in totals if total != 0.0]
-
+    tmp_end_date = start_date + pd.DateOffset(months=6) #6 months after start
+    max_date_in_data = pd.to_datetime(df["Transaction Date"].iloc[-1])
+    actual_end_date = min(tmp_end_date, max_date_in_data)
+    #for graph title:
+    start_month_name =calendar.month_name[start_date.month]
+    end_month_name =calendar.month_name[actual_end_date.month]
+  
+    date_filtered_df = df[( pd.to_datetime(df["Transaction Date"]) >= start_date) & ( pd.to_datetime(df["Transaction Date"]) <= actual_end_date + pd.DateOffset(weeks=1))].copy()
+    withdrawals_by_location = date_filtered_df[date_filtered_df["Transaction Type"] == 'W'].groupby("Location")["Amount"].sum() #group and sum location totals
+    locations = withdrawals_by_location.index
+    totals = withdrawals_by_location.values
     plt.figure(figsize=(10, 6))
-    plt.bar(filtered_locations, filtered_totals, color="red")
+    plt.bar(locations, totals, color="grey")
 
     # Add labels and title
     plt.xlabel("Locations")
     plt.ylabel("Totals ($)")
-    plt.title("Money Spent at All Locations")
+    plt.title(f"Money Spent at All Locations From {start_month_name} to {end_month_name}")
 
     # Show plot
     plt.xticks(rotation=45)
@@ -372,17 +381,26 @@ def main():
         balance_end_date = df["Transaction Date"].iloc[-1]
         balance_start_date = df["Transaction Date"].iloc[0]
         current_balance = df["Balance"].iloc[-1]
-         #TODO: allow user to input start dates
-        #start_date = "09/20/23"
-        plot_weekly_spending(df,show = False)
-        plot_daily_transactions_by_type(df, show=False)
-        plot_bar_chart_of_withdrawals(all_locations, location_totals, show=False)
+      
+        print('Do you want to choose a custom start date for report? (default is first transaction on statement)')
+        binary_options = ['Yes', 'No']
+        
+        choice = choose_option(binary_options)
+        if choice == 'Yes':
+            start = str(input("Enter a start date in the format MM/DD/YY: ")) #TODO: Add valid date checks
+
+        else:
+            start = None
+
+        plot_weekly_spending(df,start, show = False)
+        plot_daily_transactions_by_type(df,start, show=False)
+        plot_bar_chart_of_withdrawals(df, start, show=False)
        
         create_analytics_report(grandTotal,current_balance,balance_start_date, balance_end_date)
-    else: #bar graph by locatioon 
-       
-
-        plot_bar_chart_of_withdrawals(all_locations, location_totals)
+    elif selected_suboptions == 'View Total Spent By Location Graph': #bar graph by locatioon 
+        print('bar chart selected: ')
+        start = None
+        plot_bar_chart_of_withdrawals(df,start, show=True)
 
 
 if __name__ == "__main__":
