@@ -105,11 +105,18 @@ def total_spent_over_date_range(df, start_date, end_date):
 
 
 def choose_option(options):
- 
     for i, option in enumerate(options, start=1):
         print(f"{i}. {option}")
-    choice = int(input("Choose an option: "))
-    return options[choice - 1]
+    while True:  
+        try:
+            choice = int(input(f"Choose an option between 1 and {len(options)}: "))
+            if 1 <= choice <= len(options):
+                return options[choice - 1]  
+            else:
+                print(f"Please enter a number between 1 and {len(options)}.")  # Inform user of valid range
+        except ValueError:  
+            print("Please enter a valid option.")
+   
 
 def check_date_input(df,prompt):
     while True:
