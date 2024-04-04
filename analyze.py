@@ -5,6 +5,7 @@ from decimal import Decimal
 import matplotlib.pyplot as plt
 import argparse
 import calendar
+from datetime import datetime
 
 from transaction_report import create_analytics_report
 
@@ -110,6 +111,24 @@ def choose_option(options):
     choice = int(input("Choose an option: "))
     return options[choice - 1]
 
+def check_date_input(df,prompt):
+    while True:
+        user_input = input(prompt)
+        try:
+            date_input = datetime.strptime(user_input, '%m/%d/%y')
+            date = pd.to_datetime(date_input, format="%m/%d/%Y")
+        
+            df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
+            statement_start_date = df["Transaction Date"].min()
+            statement_end_date = df["Transaction Date"].max()
+            valid_range = (date >= statement_start_date and date <=statement_end_date)
+
+            if valid_range:
+                return date 
+            else:
+                print (f"Error: that date is out of the range of your statement")
+        except ValueError:
+            print('Invalid date format. Please enter in the fomat MM/DD/YY')
 
 def get_all_locations(df, flag):
     unique_locations = df["Location"].unique()  # convert unique locations to np array
@@ -147,6 +166,7 @@ def plot_weekly_spending(df, start_date=None,show=True):
     tmp_end_date = start_date + pd.DateOffset(months=2) #2 months after start
     max_date_in_data = pd.to_datetime(df["Transaction Date"].iloc[-1])
     actual_end_date = min(tmp_end_date, max_date_in_data)
+    
    
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
     date_filtered_df = df[(df["Transaction Date"] >= start_date) & (df["Transaction Date"] <= actual_end_date + pd.DateOffset(weeks=1))].copy()
@@ -367,8 +387,8 @@ def main():
         )
         print("-------------------------------------------------------------------------")
     elif selected_suboptions == 'Total spent from specified start and end date':
-        start_date = str(input("Enter a start date in the format MM/DD/YY: "))
-        end_date = str(input("Enter an end date in the format MM/DD/YY: "))
+        start_date= check_date_input(df,"Enter a start date in the format MM/DD/YY: ")
+        end_date= check_date_input(df,"Enter a start date in the format MM/DD/YY: ")
         total_in_range = total_spent_over_date_range(df, start_date=start_date, end_date=end_date)
         print( f"Total in that range: ${"{:.2f}".format(total_in_range)}")
     
@@ -387,8 +407,7 @@ def main():
         
         choice = choose_option(binary_options)
         if choice == 'Yes':
-            start = str(input("Enter a start date in the format MM/DD/YY: ")) #TODO: Add valid date checks
-
+            start = check_date_input(df,"Enter a start date in the format MM/DD/YY: ")
         else:
             start = None
 
