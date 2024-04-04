@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import argparse
 import calendar
 from datetime import datetime
+import numpy as np
 
 from transaction_report import create_analytics_report
 
@@ -253,6 +254,7 @@ def plot_daily_transactions_by_type(df, start_date=None, show=True):
         marker="o",
         color="red",
         linestyle="-",
+        label='withdrawals'
     )
     plt.plot(
         deposits["Transaction Date"],
@@ -260,6 +262,7 @@ def plot_daily_transactions_by_type(df, start_date=None, show=True):
         marker="o",
         color="black",
         linestyle="-",
+        label='deposits'
     )
     for _, row in withdrawals.iterrows():  # adds labels to points with amounts
         plt.text(
@@ -281,7 +284,8 @@ def plot_daily_transactions_by_type(df, start_date=None, show=True):
             fontsize=8,
             bbox=dict(facecolor='white', alpha=0.5, pad=3)
         )
-    plt.title(f"Daily Spending Starting {start_month_name} of {start_year}")
+    plt.title(f"Daily Transactions Starting {start_month_name} of {start_year}")
+    plt.legend()
     plt.xlabel("Dates")
     plt.ylabel("Money Spent or Deposited($)")
     plt.grid(True)
@@ -308,11 +312,14 @@ def plot_bar_chart_of_withdrawals(df, start_date=None,show =True):
     end_month_name =calendar.month_name[actual_end_date.month]
   
     date_filtered_df = df[( pd.to_datetime(df["Transaction Date"]) >= start_date) & ( pd.to_datetime(df["Transaction Date"]) <= actual_end_date + pd.DateOffset(weeks=1))].copy()
+   
     withdrawals_by_location = date_filtered_df[date_filtered_df["Transaction Type"] == 'W'].groupby("Location")["Amount"].sum() #group and sum location totals
+    max_amount_spent = withdrawals_by_location.max()
+    print('$$$$$$ max amount spent: ', max_amount_spent, ' type: ', type(max_amount_spent))
     locations = withdrawals_by_location.index
     totals = withdrawals_by_location.values
     plt.figure(figsize=(10, 6))
-    plt.bar(locations, totals, color="grey")
+    plt.bar(locations, totals,color="violet")
 
     # Add labels and title
     plt.xlabel("Locations")
@@ -320,7 +327,9 @@ def plot_bar_chart_of_withdrawals(df, start_date=None,show =True):
     plt.title(f"Money Spent at All Locations From {start_month_name} to {end_month_name}")
 
     # Show plot
+    plt.grid(axis='y', linestyle='--', color='gray')
     plt.xticks(rotation=45)
+    plt.yticks(range(0, int(max_amount_spent)+50, 50))
     plt.tight_layout()  # Adjust layout
     if show:
         plt.show()
