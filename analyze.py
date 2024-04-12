@@ -9,6 +9,7 @@ from datetime import datetime
 import numpy as np
 
 from transaction_report import create_analytics_report
+from handle_input import choose_option, check_date_input
 
 
 def extract_categories(blocks):  # add each line to category and return lists
@@ -105,39 +106,6 @@ def total_spent_over_date_range(df, start_date, end_date):
     return total
 
 
-def choose_option(options):
-    for i, option in enumerate(options, start=1):
-        print(f"{i}. {option}")
-    while True:  
-        try:
-            choice = int(input(f"Choose an option between 1 and {len(options)}: "))
-            if 1 <= choice <= len(options):
-                return options[choice - 1]  
-            else:
-                print(f"Please enter a number between 1 and {len(options)}.")  # Inform user of valid range
-        except ValueError:  
-            print("Please enter a valid option.")
-   
-
-def check_date_input(df,prompt):
-    while True:
-        user_input = input(prompt)
-        try:
-            date_input = datetime.strptime(user_input, '%m/%d/%y')
-            date = pd.to_datetime(date_input, format="%m/%d/%Y")
-        
-            df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
-            statement_start_date = df["Transaction Date"].min()
-            statement_end_date = df["Transaction Date"].max()
-            valid_range = (date >= statement_start_date and date <=statement_end_date)
-
-            if valid_range:
-                return date 
-            else:
-                print (f"Error: that date is out of the range of your statement")
-        except ValueError:
-            print('Invalid date format. Please enter in the fomat MM/DD/YY')
-
 def get_all_locations(df, flag):
     unique_locations = df["Location"].unique()  # convert unique locations to np array
     locations_list = []  # list of locations
@@ -213,7 +181,7 @@ def plot_weekly_spending(df, start_date=None,show=True):
         save_figure('time series', 'Weekly_spending_plot')
 
 
-#TODO: add legend for colors 
+
 def plot_daily_transactions_by_type(df, start_date=None, show=True):
     df["Transaction Date"] = pd.to_datetime(df["Transaction Date"], format="%m/%d/%Y")
     df["Net Amount"] = (
@@ -315,7 +283,7 @@ def plot_bar_chart_of_withdrawals(df, start_date=None,show =True):
    
     withdrawals_by_location = date_filtered_df[date_filtered_df["Transaction Type"] == 'W'].groupby("Location")["Amount"].sum() #group and sum location totals
     max_amount_spent = withdrawals_by_location.max()
-    print('$$$$$$ max amount spent: ', max_amount_spent, ' type: ', type(max_amount_spent))
+   
     locations = withdrawals_by_location.index
     totals = withdrawals_by_location.values
     plt.figure(figsize=(10, 6))

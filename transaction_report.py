@@ -37,7 +37,10 @@ def create_analytics_report(
     # pdf.write(5, f"Total spent: ${total_spent}")
     pdf.write(5, f"Statement date range: {balance_start_date}-{balance_end_date}")
     pdf.ln(5)
-    pdf.write(5, f"Current balance: ${current_balance} as of {balance_end_date}")
+    pdf.write(
+        5,
+        f"Current balance: ${'{:.2f}'.format(current_balance)} as of {balance_end_date}",
+    )
     pdf.ln(3)
     # add graphs:
     pdf.image("./graphs/Spending_by_location_bar.png", 5, 60, WIDTH - 20)
