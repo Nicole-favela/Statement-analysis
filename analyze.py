@@ -21,7 +21,7 @@ def extract_categories(blocks):  # add each line to category and return lists
     types = []  # W for withdrawl, D for deposit
 
     for block in blocks:
-        # line = block.split("\n")
+       
         block = block.strip()
 
         # Extract date
@@ -136,9 +136,7 @@ def plot_weekly_spending(df, start_date=None,show=True):
       
     else:
         start_date = pd.to_datetime(start_date, format="%m/%d/%y")
-        print('start date is: ', start_date, ' of type: ', type(start_date))
-   
-    print('type of start datte: ', type(start_date))
+       
     tmp_end_date = start_date + pd.DateOffset(months=2) #2 months after start
     max_date_in_data = pd.to_datetime(df["Transaction Date"].iloc[-1])
     actual_end_date = min(tmp_end_date, max_date_in_data)
@@ -203,7 +201,7 @@ def plot_daily_transactions_by_type(df, start_date=None, show=True):
       
     else:
         start_date = pd.to_datetime(start_date, format="%m/%d/%y")
-        print('start date is: ', start_date, ' of type: ', type(start_date))
+       
    
     start_year = start_date.strftime('%Y')
     start_month_name =calendar.month_name[start_date.month]
@@ -360,7 +358,7 @@ def main():
         total = total_spent_at_location(df, location)
         location_totals.append(total)  # total for each location
     if selected_suboptions == 'Total spent at given location':
-        print("the unique locations>>>>>")
+       
         printFlag = True
         all_locations= get_all_locations(df, printFlag)
         location_num = int(input("Choose an option from the locations: "))
